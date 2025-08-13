@@ -1,20 +1,25 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  db:
-    image: mongo
+  mongodb:
+    image: mongo:6.0
     container_name: mongo_container
+    restart: always
     ports:
       - "27017:27017"
     volumes:
-      - db_data:/data/db
+      - mongo_data:/data/db
 
-  app:
-    build: ./
+  urlshortener:
+    build: .
+    container_name: urlshortener_container
+    restart: always
     ports:
-      - "8080:8080"
+      - "80:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/urlshortener
     depends_on:
-      - db
+      - mongodb
 
 volumes:
-  db_data:
+  mongo_data:
