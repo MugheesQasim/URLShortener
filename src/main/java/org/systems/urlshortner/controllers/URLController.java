@@ -98,10 +98,4 @@ public class URLController {
         }
         return ResponseEntity.ok("URL deleted successfully.");
     }
-
-    // Health check API
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("URL Shortener is running fine.");
-    }
 }
