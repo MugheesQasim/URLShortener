@@ -72,30 +72,20 @@ Replace `your_database_name` with your DB name.
 
 ## Running the Docker Container
 
-1. **Build the Docker image**:
+Docker compose is added in the project so a single docker compose build command will start a mongodb and a spring boot container
+
+**Build the Docker image**:
 
 ```bash
-./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=url-shortener:latest
+docker compose up --build
 ```
 
-2. **Run the container**:
+Trigger the following api to check if the url shortener is up and running:
 
 ```bash
-docker run -p 8080:8080 url-shortener:latest
+curl http://localhost/api/health
 ```
 
-3. **Verify**:
-
-```bash
-curl http://localhost:8080
-```
-
-4. **Stop the container**:
-
-```bash
-docker ps
-docker stop <container_id>
-```
 
 ## Engineering
 
