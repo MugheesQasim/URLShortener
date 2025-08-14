@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.systems.urlshortner.MongoConfig;
 import org.systems.urlshortner.model.URLPayload;
 import org.systems.urlshortner.services.URLServiceImpl;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,25 +20,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = URLController.class)
-@Import(MongoConfig.class)
 class URLControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private URLServiceImpl urlService;
+    private URLServiceImpl urlService; // fully mocked, no DB calls
 
     @Test
     void shortenUrl() throws Exception {
         URLPayload mockPayload = new URLPayload();
         mockPayload.setOriginalUrl("https://example.com");
         mockPayload.setShortenedUrl("http://localhost/short123");
+
         when(urlService.saveOriginalURL(any(URLPayload.class))).thenReturn(mockPayload);
 
         String requestBody = "{ \"originalUrl\": \"https://example.com\" }";
 
-        mockMvc.perform(post("/shorten")
+        mockMvc.perform(post("/api/shorten") // FIX: add /api prefix
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -53,9 +51,10 @@ class URLControllerTest {
     void redirect() throws Exception {
         URLPayload mockPayload = new URLPayload();
         mockPayload.setOriginalUrl("https://example.com");
+
         when(urlService.getOriginalURL("localhost/short123")).thenReturn(mockPayload);
 
-        mockMvc.perform(get("/short123"))
+        mockMvc.perform(get("/api/short123")) // FIX: add /api prefix
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "https://example.com"));
 
